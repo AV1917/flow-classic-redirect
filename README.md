@@ -15,7 +15,7 @@ A lightweight browser extension that forces Power Automate flows to open in the 
 ## Permissions
 
 - **Host permission**: `https://make.powerautomate.com/*`
-- **Storage**: Persists your global settings and whitelisted flow IDs across sessions.
+- **Storage**: To persist global settings and whitelisted flow IDs across sessions.
 
 ## Installation
 
