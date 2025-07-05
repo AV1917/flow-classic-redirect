@@ -1,17 +1,26 @@
 {
   "manifest_version": 3,
-  "name": "Power Automate Classic Redirect",
-  "version": "1.0",
-  "description": "Enforces 'v3=false' on flow URLs.",
+  "name": "Flow Classic Redirect",
+  "version": "2.0",
+  "description": "Enforces 'v3=false' on Power Automate flow URLs.",
+  "permissions": [
+    "storage"
+  ],
   "host_permissions": [
     "*://make.powerautomate.com/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16_disabled.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
   "icons": {
-    "16": "icon16.png",
-    "48": "icon48.png",
-    "128": "icon128.png"
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }

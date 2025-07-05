@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Flow Classic Redirect</title>
+  <style>
+    /* base styles */
+    body {
+      margin: 0;
+      padding: 16px;
+      width: 260px;
+      background: #faf9f8;
+      color: #222;
+      font-family: system-ui, sans-serif;
+    }
+    h1 {
+      margin: 0 0 20px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* on / off toggle */
+    .segmented {
+      display: flex;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .segmented button {
+      flex: 1;
+      padding: 8px 0;
+      background: white;
+      border: none;
+      font-size: 14px;
+      color: #111;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .segmented button:hover {
+      background: #eee;
+    }
+    .segmented button.active {
+      background: #4DA15E;
+      color: white;
+      font-weight: 600;
+    }
+
+    #btnOff.active {
+      background: #d03742;
+      color: white;
+    }
+
+    /* add / remove from whitelist button */
+    .wl-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 70%;
+      padding: 8px;
+      font-size: 14px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      color: #111;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin: 0 auto 16px;
+      font-weight: normal;
+    }
+    .wl-button:hover:not(:disabled) {
+      background: #eee;
+    }
+    .wl-button:disabled {
+      background: #eee;
+      color: #999;
+      cursor: default;
+    }
+    .wl-button .remove-icon {
+      color: #d03742;
+      font-weight: bold;
+      margin-right: 6px;
+    }
+    .wl-button.remove {
+      color: #111;
+      font-weight: normal;
+    }
+    .wl-button .check-icon {
+      color: #4DA15E;
+      font-weight: bold;
+      margin-right: 6px;
+    }
+    .wl-button.add {
+      color: #111;
+      font-weight: normal;
+    }
+
+    /* whitelist nav */
+    .link-button {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-top: 8px;
+      font-size: 14px;
+      color: #0078d4;
+      text-decoration: underline;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .link-button:hover {
+      color: #215a9a;
+    }
+
+    /* pages */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* whitelist page */
+    #noFlowsMsg {
+      display: none;
+      margin: 12px 0;
+      font-size: 13px;
+      font-style: italic;
+      text-align: center;
+      color: #666;
+    }
+    #whitelistList {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 10px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    #whitelistList li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      word-break: break-word;
+    }
+    #whitelistList .remove-icon {
+      color: #d03742;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    #whitelistList .remove-icon:hover {
+      color: #b0303a;
+    }
+
+    /* back nav */
+    .back {
+      display: inline-block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #0078d4;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .back:hover {
+      color: #215a9a;
+    }
+
+    /* clear all */
+    button.clear {
+      display: block;
+      margin: 12px auto 0;
+      padding: 8px 12px;
+      font-size: 14px;
+      color: #fff;
+      background: #d03742;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button.clear:hover {
+      background: #b0303a;
+    }
+    button.clear:disabled {
+      background: #eee;
+      color: #999;
+      cursor: default;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- main page -->
+  <div id="mainPage" class="page active">
+    <h1>Flow Classic Redirect</h1>
+    <div class="segmented">
+      <button id="btnOn">On</button>
+      <button id="btnOff">Off</button>
+    </div>
+    <button id="wlButton" class="wl-button"></button>
+    <div class="link-button" id="showWhitelist">Whitelisted Flows</div>
+  </div>
+  <!-- whitelist page -->
+  <div id="wlPage" class="page">
+    <div id="backMain" class="back">&larr; Back</div>
+    <h1>Whitelisted Flows</h1>
+    <div id="noFlowsMsg">No flows are currently whitelisted.</div>
+    <ul id="whitelistList"></ul>
+    <button class="clear" id="clearAll">Clear All</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
