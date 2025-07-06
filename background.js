@@ -55,7 +55,7 @@ chrome.runtime.onMessage.addListener((msg, _, respond) => {
   }
 });
 
-// tab nav / reload listener
+// tab nav / reload listener - only case where redirect should occur
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.status === 'loading' && changeInfo.url) {
     updateState(tabId, changeInfo.url, { redirect: true });
@@ -65,9 +65,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 // tab switch listener
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   const tab = await chrome.tabs.get(tabId);
-  if (tab.url) updateState(tabId, tab.url, { redirect: true });
+  if (tab.url) updateState(tabId, tab.url, { redirect: false });
 });
-
 
 // applies computeState
 async function updateState(tabId, rawUrl, { redirect }) {
