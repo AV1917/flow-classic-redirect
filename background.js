@@ -1,4 +1,4 @@
-const GLOBAL_KEY    = 'redirectEnabled';
+const GLOBAL_KEY = 'redirectEnabled';
 const WHITELIST_KEY = 'whitelistedFlows';
 
 // init storage defaults
@@ -56,10 +56,11 @@ chrome.runtime.onMessage.addListener((msg, _, respond) => {
 });
 
 // tab nav / reload listener - only case where redirect should occur
-chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-  if (changeInfo.status === 'loading' && changeInfo.url) {
-    updateState(tabId, changeInfo.url, { redirect: true });
-  }
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'loading') return;
+  const url = changeInfo.url || tab.url;
+  if (!url) return;
+  updateState(tabId, url, { redirect: true });
 });
 
 // tab switch listener
@@ -135,7 +136,7 @@ async function computeState(rawUrl) {
       const dest = computeRedirectUrl(rawUrl);
       if (dest) {
         shouldRedirect = true;
-        redirectUrl    = dest;
+        redirectUrl = dest;
       }
     }
   }

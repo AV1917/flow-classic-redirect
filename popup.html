@@ -188,6 +188,10 @@
       color: #999;
       cursor: default;
     }
+    input.invalid{
+      border:1px solid #d03742 !important;
+      outline: none;
+    }
 
   </style>
 </head>
@@ -206,6 +210,12 @@
   <div id="wlPage" class="page">
     <div id="backMain" class="back">&larr; Back</div>
     <h1>Whitelisted Flows</h1>
+  <div id="manualEntry" style="display: flex; gap: 6px; margin-bottom: 12px;">
+    <input id="manualFlowInput" type="text" placeholder="Paste flow link or ID"
+      style="flex: 1; padding: 6px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px;" />
+    <button id="manualAddBtn" title="Add flow to whitelist"
+      style="padding: 6px 10px; font-size: 14px; font-weight: bold; background: white; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">+</button>
+  </div>
     <div id="noFlowsMsg">No flows are currently whitelisted.</div>
     <ul id="whitelistList"></ul>
     <button class="clear" id="clearAll">Clear All</button>

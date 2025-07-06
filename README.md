@@ -15,7 +15,7 @@ When enabled, visiting any flow URL will automatically reload the page in Classi
 - **Classic Designer by Default**: Automatically reloads any flow URL in Classic mode, so you never get dropped into the New Designer.
 - **Global On/Off**: Enable or disable automatic redirection across all flows with one click.
 - **Per-Flow Whitelist**: Opt individual flows out of Classic redirects, so they stay in New Designer mode when you need them.
-- **Whitelist Manager**: View, remove, or clear all whitelisted flows from a single page.
+- **Whitelist Manager**: View, add, remove, or clear all whitelisted flows from a single page.
 - **No More Copilot**: Fully suppresses Copilot icon and pop-ups.
 - **Fewer Interruptions**: Skips 'Save before switching' prompts, avoids intrusive survey pop-ups, and bypasses the unreliable switcher toggle between Classic and New Designer.
 - **Smoother Multi-tab Workflow**: No need to manually toggle Classic Mode on every tab – just open your flows and get to work.

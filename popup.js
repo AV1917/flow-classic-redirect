@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const clearAll = document.getElementById('clearAll');
   const wlList = document.getElementById('whitelistList');
   const noFlowsMsg = document.getElementById('noFlowsMsg');
+  const manualInput = document.getElementById('manualFlowInput');
+  const manualAddBtn = document.getElementById('manualAddBtn');
 
   showWhitelist.title = 'Click to open whitelist manager';
 
@@ -84,6 +86,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     chrome.runtime.sendMessage({ type: 'refresh-icon' });
   });
 
+  // manual whitelist entry
+  manualAddBtn.addEventListener('click', async () => {
+    const val = manualInput.value.trim();
+    const guid = extractFlowId(val);
+    if (!guid) {
+      setInputError('Invalid flow URL or GUID');
+      return;
+    }
+
+    const store = await chrome.storage.sync.get(WHITELIST_KEY);
+    const list = store[WHITELIST_KEY] || [];
+    if (list.includes(guid)) {
+      setInputError('Flow is already whitelisted');
+      return;
+    }
+
+    list.push(guid);
+    await chrome.storage.sync.set({ [WHITELIST_KEY]: list });
+    if (guid === flowId) {
+      isWhitelisted = true;
+      updateWlButton();
+    }
+    chrome.runtime.sendMessage({ type: 'refresh-icon' });
+    renderWhitelist();
+    manualInput.value = '';
+    clearInputError();
+  });
+
+  manualInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      manualAddBtn.click();
+    }
+  });
+
+  manualInput.addEventListener('input', clearInputError);
+
   // helper functions
   function updateOnOffButtons() {
     btnOn.classList.toggle('active', enabled);
@@ -112,20 +151,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  function setInputError(msg) {
+    manualInput.classList.add('invalid');
+    manualInput.title = msg;
+  }
+
+  function clearInputError() {
+    manualInput.classList.remove('invalid');
+    manualInput.removeAttribute('title');
+  }
+
+  function extractFlowId(val) {
+    const GUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
+    const hostOK = /^(make\.powerautomate\.com|make\.powerapps\.com)$/i;
+
+    try {
+      const url = new URL(val);
+      if (!hostOK.test(url.hostname)) return null;
+
+      const rx = new RegExp(`/(?:flows|cloudflows)/(${GUID})(?=[/?#]|$)`);
+      const m = url.pathname.match(rx);
+      return m ? m[1] : null;
+    } catch {
+      return new RegExp(`^${GUID}$`).test(val) ? val : null;
+    }
+  }
+
   async function renderWhitelist() {
     const { [WHITELIST_KEY]: list = [] } = await chrome.storage.sync.get(WHITELIST_KEY);
     wlList.innerHTML = '';
     noFlowsMsg.style.display = list.length === 0 ? 'block' : 'none';
     clearAll.disabled = list.length === 0;
-    if (!clearAll.disabled) {
-      clearAll.title = 'Click to re-enable redirect for all whitelisted flows';
-    } else {
-      clearAll.removeAttribute('title');
-    }
+    clearAll.title = list.length ? 'Click to re-enable redirect for all whitelisted flows' : '';
 
     for (const id of list) {
       const li = document.createElement('li');
-      li.innerHTML = `<span>${id}</span><span class="remove-icon">\u2716</span>`;
+      const isCurrent = id === flowId;
+      li.innerHTML = `<span>${id}${isCurrent ? ' (current)' : ''}</span><span class="remove-icon">\u2716</span>`;
       const rm = li.querySelector('.remove-icon');
       rm.title = 'Click to re-enable redirect for the selected flow';
       rm.onclick = async () => {
