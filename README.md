@@ -4,7 +4,7 @@
 
 A lightweight browser extension that forces Microsoft Power Automate flows to open in the Classic Designer.
 
-Includes whitelist capability – disable automatic redirect for individual flows, allowing you to choose which Designer experience you use.
+When enabled, visiting any flow URL will automatically reload the page in Classic Designer mode. If a flow has been whitelisted, it will remain in New Designer mode.
 
 ## Installation (Recommended)
 
