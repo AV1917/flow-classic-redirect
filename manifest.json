@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Flow Classic Redirect",
-  "version": "2.0.1",
-  "description":  "Force Power Automate flows to open in the Classic Designer.",
+  "version": "2.0.2",
+  "description":  "Force Microsoft Power Automate flows to open in the Classic Designer.",
   "permissions": [
     "storage"
   ],
