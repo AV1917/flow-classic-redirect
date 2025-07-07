@@ -22,13 +22,13 @@ When enabled, visiting any flow URL will automatically reload the page in Classi
 - **Robust URL Handling**: Catches all flow URLs reliably – including from solutions, Power Apps, manual entries, refreshes, or new tabs.
 - **No Unexpected Redirects**: To prevent data loss, redirection will only occur on the first load of a new page – already loaded pages will not be impacted by changes to the global on/off option or whitelist.
 
-## User Experience:
+## User Experience
 
-- On non–Power Automate websites, the extension is disabled and greyed out.
+- On non-Power Automate websites, the extension is disabled and greyed out.
 - On general Power Automate pages (like the homepage or flow list), the extension is active – so you can toggle global redirection or manage your whitelist before opening any flows.
 - On a flow's Details or Editor page, you get all the same controls, plus a one-click option to add or remove the current flow from the whitelist.
 
-## Statuses:
+## Statuses
 
 #### Active
 
@@ -38,7 +38,7 @@ When enabled, visiting any flow URL will automatically reload the page in Classi
 
 #### Inactive
 
-- ![Disabled](icons/icon16_disabled.png) **Disabled** – Extension is inactive on this site.
+- ![Disabled](icons/icon16_disabled.png) **Disabled** – Extension is inactive on the current site.
 
 
 ## Permissions
