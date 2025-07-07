@@ -8,7 +8,9 @@ When enabled, visiting any flow URL will automatically reload the page in Classi
 
 ## Installation (Recommended)
 
-### [Install from Chrome Web Store](https://chromewebstore.google.com/detail/flow-classic-redirect/hckjhekebdlnipgejjbbkbdggfmkjjag)
+- **Chrome:** https://chromewebstore.google.com/detail/flow-classic-redirect/hckjhekebdlnipgejjbbkbdggfmkjjag
+- **Edge:** *Pending store review - in the interim, download from Chrome Web Store*
+- **Firefox:** *Pending store review - coming soon!*
 
 ## Features
 

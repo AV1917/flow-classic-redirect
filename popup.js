@@ -185,10 +185,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     clearAll.title = list.length ? 'Click to re-enable redirect for all whitelisted flows' : '';
 
     for (const id of list) {
-      const li = document.createElement('li');
       const isCurrent = id === flowId;
-      li.innerHTML = `<span>${id}${isCurrent ? ' (current)' : ''}</span><span class="remove-icon">\u2716</span>`;
-      const rm = li.querySelector('.remove-icon');
+      const li = document.createElement('li');
+      const span = document.createElement('span');
+      span.textContent = id + (isCurrent ? ' (current)' : '');
+      const rm = document.createElement('span');
+      rm.className = 'remove-icon';
+      rm.textContent = '✖';
       rm.title = 'Click to re-enable redirect for the selected flow';
       rm.onclick = async () => {
         const { [WHITELIST_KEY]: curr = [] } = await chrome.storage.sync.get(WHITELIST_KEY);
@@ -201,6 +204,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         renderWhitelist();
       };
+      li.appendChild(span);
+      li.appendChild(rm);
       wlList.appendChild(li);
     }
   }

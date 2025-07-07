@@ -1,5 +1,6 @@
 const GLOBAL_KEY = 'redirectEnabled';
 const WHITELIST_KEY = 'whitelistedFlows';
+const redirected = new Map();
 
 // init storage defaults
 chrome.runtime.onInstalled.addListener(() => {
@@ -69,6 +70,9 @@ chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   if (tab.url) updateState(tabId, tab.url, { redirect: false });
 });
 
+// listener for ff infinite loop redirect guard
+chrome.tabs.onRemoved.addListener(tabId => redirected.delete(tabId));
+
 // applies computeState
 async function updateState(tabId, rawUrl, { redirect }) {
   // disable if invalid url e.g. chrome://
@@ -93,7 +97,18 @@ async function updateState(tabId, rawUrl, { redirect }) {
   chrome.action.setIcon({ tabId, path: iconPath });
   // redirect if applicable
   if (redirect && shouldRedirect && redirectUrl) {
-    chrome.tabs.update(tabId, { url: redirectUrl });
+    // new guard specific to ff infinite loop issue
+    const already = redirected.get(tabId);
+    if (already !== redirectUrl) {
+      redirected.set(tabId, redirectUrl);
+      chrome.tabs.update(tabId, { url: redirectUrl });
+      return;
+    }
+    redirected.delete(tabId);
+    return;
+  }
+  if (redirected.get(tabId) !== rawUrl) {
+    redirected.delete(tabId);
   }
 }
 
@@ -122,7 +137,9 @@ async function computeState(rawUrl) {
 
   const flowMatch = url.pathname.match(/\/flows\/([0-9a-fA-F-]+)/);
   const flowId = flowMatch?.[1] || null;
-  const isFlow = isHost && flowId && !/\/details\/?$/.test(url.pathname);
+  // split out to show wl icon on details page
+  const isDetails = /\/details\/?$/.test(url.pathname);
+  const isFlow = isHost && !!flowId
 
   if (!isHost) {
     iconPath = 'icons/icon16_disabled.png';
@@ -132,7 +149,7 @@ async function computeState(rawUrl) {
     iconPath = 'icons/icon16_wl.png';
   } else {
     iconPath = 'icons/icon16_on.png';
-    if (isFlow) {
+    if (isFlow && !isDetails) {
       const dest = computeRedirectUrl(rawUrl);
       if (dest) {
         shouldRedirect = true;

@@ -9,8 +9,17 @@
   "host_permissions": [
     "*://make.powerautomate.com/*"
   ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{b5e8dfe0-84e2-4f3b-84db-45e9e4615da1}",
+      "strict_min_version": "109.0"
+    }
+  },
   "background": {
-    "service_worker": "background.js"
+    "scripts": [
+      "browser-polyfill.min.js",
+      "background.js"
+    ]
   },
   "action": {
     "default_icon": {
