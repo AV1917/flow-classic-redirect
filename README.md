@@ -6,11 +6,11 @@ A lightweight browser extension that forces Microsoft Power Automate flows to op
 
 When enabled, visiting any flow URL will automatically reload the page in Classic Designer mode. If a flow has been whitelisted, it will remain in New Designer mode.
 
-## Installation (Recommended)
+## Installation
 
 - **Chrome:** https://chromewebstore.google.com/detail/flow-classic-redirect/hckjhekebdlnipgejjbbkbdggfmkjjag
 - **Edge:** *Pending store review - in the interim, download from Chrome Web Store*
-- **Firefox:** *Pending store review - coming soon!*
+- **Firefox:** https://addons.mozilla.org/firefox/addon/flow-classic-redirect/
 
 ## Features
 
@@ -47,9 +47,3 @@ When enabled, visiting any flow URL will automatically reload the page in Classi
 
 - **Host permission**: `https://make.powerautomate.com/*`
 - **Storage**: To persist global settings and whitelisted flow IDs across sessions.
-
-## Installation (Manual)
-
-1. Clone or download this repository; unzip.
-2. Open `chrome://extensions` (Chrome) or `edge://extensions` (Edge).
-3. Enable **Developer mode**, click **Load unpacked**, and select this folder.
