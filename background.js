@@ -1,6 +1,6 @@
 const GLOBAL_KEY = 'redirectEnabled';
 const WHITELIST_KEY = 'whitelistedFlows';
-const redirected = new Map();
+const redirectingTo = new Map();
 
 // init storage defaults
 chrome.runtime.onInstalled.addListener(() => {
@@ -56,12 +56,13 @@ chrome.runtime.onMessage.addListener((msg, _, respond) => {
   }
 });
 
-// tab nav / reload listener - only case where redirect should occur
+// tab nav / reload listener - only case where redirect should occur (when url actually changes)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'loading') return;
-  const url = changeInfo.url || tab.url;
-  if (!url) return;
-  updateState(tabId, url, { redirect: true });
+  if (changeInfo.url) {
+    updateState(tabId, changeInfo.url, { redirect: true });
+    return;
+  }
+  if (changeInfo.status === 'complete' && tab.url) updateState(tabId, tab.url, { redirect: false });
 });
 
 // tab switch listener
@@ -70,13 +71,16 @@ chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   if (tab.url) updateState(tabId, tab.url, { redirect: false });
 });
 
-// listener for ff infinite loop redirect guard
-chrome.tabs.onRemoved.addListener(tabId => redirected.delete(tabId));
+// listener for tab cleanup
+chrome.tabs.onRemoved.addListener(tabId => {
+  redirectingTo.delete(tabId);
+});
 
 // applies computeState
 async function updateState(tabId, rawUrl, { redirect }) {
   // disable if invalid url e.g. chrome://
   if (typeof rawUrl !== 'string') {
+    redirectingTo.delete(tabId);
     chrome.action.disable(tabId);
     chrome.action.setIcon({ tabId, path: 'icons/icon16_disabled.png' });
     chrome.action.setPopup({ tabId, popup: '' });
@@ -97,19 +101,21 @@ async function updateState(tabId, rawUrl, { redirect }) {
   chrome.action.setIcon({ tabId, path: iconPath });
   // redirect if applicable
   if (redirect && shouldRedirect && redirectUrl) {
-    // new guard specific to ff infinite loop issue
-    const already = redirected.get(tabId);
-    if (already !== redirectUrl) {
-      redirected.set(tabId, redirectUrl);
-      chrome.tabs.update(tabId, { url: redirectUrl });
-      return;
-    }
-    redirected.delete(tabId);
+    const inFlight = redirectingTo.get(tabId);
+    if (inFlight === redirectUrl) return;
+    redirectingTo.set(tabId, redirectUrl);
+    const ok = await replaceTabUrl(tabId, redirectUrl);
+    if (!ok) redirectingTo.delete(tabId);
     return;
   }
-  if (redirected.get(tabId) !== rawUrl) {
-    redirected.delete(tabId);
+
+  const inFlight = redirectingTo.get(tabId);
+  if (!inFlight) return;
+  if (rawUrl === inFlight) {
+    redirectingTo.delete(tabId);
+    return;
   }
+  if (!shouldRedirect) redirectingTo.delete(tabId);
 }
 
 // helper function - computes icon & if redirect
@@ -135,11 +141,12 @@ async function computeState(rawUrl) {
     [WHITELIST_KEY]: []
   });
 
-  const flowMatch = url.pathname.match(/\/flows\/([0-9a-fA-F-]+)/);
+  const flowMatch = url.pathname.match(/\/(?:flows|cloudflows)\/([0-9a-fA-F-]+)(?=[/?#]|$)/i);
   const flowId = flowMatch?.[1] || null;
+  const isNewFlow = /\/(?:flows|cloudflows)\/new(?=[/?#]|$)/i.test(url.pathname);
   // split out to show wl icon on details page
   const isDetails = /\/details\/?$/.test(url.pathname);
-  const isFlow = isHost && !!flowId
+  const isFlow = isHost && (!!flowId || isNewFlow);
 
   if (!isHost) {
     iconPath = 'icons/icon16_disabled.png';
@@ -165,12 +172,33 @@ async function computeState(rawUrl) {
 function computeRedirectUrl(rawUrl) {
   try {
     const url = new URL(rawUrl);
-    if (
-      url.hostname !== 'make.powerautomate.com' || !url.pathname.includes('/flows/') || /\/details\/?$/.test(url.pathname) || url.searchParams.get('v3') === 'false'
-    ) return null;
+    const isFlowPath = /\/(?:flows|cloudflows)\//i.test(url.pathname);
+    if (url.hostname !== 'make.powerautomate.com' || !isFlowPath || /\/details\/?$/.test(url.pathname) || url.searchParams.get('v3') === 'false') return null;
     url.searchParams.set('v3', 'false');
     return url.toString();
   } catch {
     return null;
+  }
+}
+
+async function replaceTabUrl(tabId, targetUrl) {
+  try {
+    if (chrome.scripting?.executeScript) {
+      await chrome.scripting.executeScript({
+        target: { tabId },
+        args: [targetUrl],
+        func: nextUrl => {
+          if (location.href !== nextUrl) location.replace(nextUrl);
+        }
+      });
+      return true;
+    }
+  } catch {}
+
+  try {
+    await chrome.tabs.update(tabId, { url: targetUrl });
+    return true;
+  } catch {
+    return false;
   }
 }
