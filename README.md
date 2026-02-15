@@ -47,4 +47,4 @@ When enabled, visiting any flow URL will automatically reload the page in Classi
 
 - **Host permission**: `https://make.powerautomate.com/*`
 - **Storage**: To persist global settings and whitelisted flow IDs across sessions.
-- **Scripting**: To run ensure Classic redirects don't create extra Back / Forward history entries.
+- **Scripting**: To ensure redirects don't create extra Back / Forward history entries.
