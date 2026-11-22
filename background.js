@@ -56,13 +56,13 @@ chrome.runtime.onMessage.addListener((msg, _, respond) => {
   }
 });
 
-// tab nav / reload listener - only case where redirect should occur (when url actually changes)
+// tab nav / reload listener - only case where redirect should occur (when url actually changes) + recheck completed to catch refreshes of same URL
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.url) {
     updateState(tabId, changeInfo.url, { redirect: true });
     return;
   }
-  if (changeInfo.status === 'complete' && tab.url) updateState(tabId, tab.url, { redirect: false });
+  if (changeInfo.status === 'complete' && tab.url) updateState(tabId, tab.url, { redirect: true });
 });
 
 // tab switch listener
