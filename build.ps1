@@ -21,7 +21,8 @@ foreach ($browser in 'chrome', 'edge', 'firefox') {
     Copy-Item (Join-Path $root 'icons') $folder -Recurse
     Copy-Item $manifest (Join-Path $folder 'manifest.json')
 
-    Compress-Archive -Path (Join-Path $folder '*') -DestinationPath $zip -Force
+    $files = (Get-ChildItem $folder).Name
+    tar.exe -acf $zip -C $folder @files
     Remove-Item $folder -Recurse -Force
 
     Write-Host "Built: $zip"
